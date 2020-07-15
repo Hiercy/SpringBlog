@@ -2,6 +2,7 @@ package com.mike.blog.service;
 
 import com.mike.blog.dto.LoginDto;
 import com.mike.blog.dto.RegisterDto;
+import com.mike.blog.exception.UserAlreadyExistException;
 import com.mike.blog.model.Customer;
 import com.mike.blog.repository.CustomerRepository;
 import com.mike.blog.security.JwtProvider;
@@ -30,12 +31,16 @@ public class AuthService {
     }
 
     public void register(RegisterDto registerDto) {
+        boolean userAlreadyExist = customerRepository
+                .findByUsernameOrEmail(registerDto.getUsername(), registerDto.getEmail()).isPresent();
+        if (userAlreadyExist) {
+            throw new UserAlreadyExistException("Sorry, but user with this username or email already exist.");
+        }
         Customer customer = new Customer().builder()
                 .username(registerDto.getUsername())
                 .password(encodePassword(registerDto.getPassword()))
                 .email(registerDto.getEmail())
                 .build();
-
         customerRepository.save(customer);
     }
 
