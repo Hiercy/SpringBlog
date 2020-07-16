@@ -28,16 +28,7 @@ public class PostService {
 
     @Transactional
     public void create(PostDto postDto) {
-        User currentUser = authService.getCurrentUser().orElseThrow(() ->
-                new UserNotFoundException("Cannot get user from context"));
-        Post post = new Post().builder()
-                .title(postDto.getTitle())
-                .content(postDto.getContent())
-                .createdAt(Instant.now())
-                .username(currentUser.getUsername())
-                .build();
-
-        postRepository.save(post);
+        postRepository.save(dtoToPost(postDto));
     }
 
     @Transactional(readOnly = true)
@@ -69,6 +60,18 @@ public class PostService {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .username(post.getUsername())
+                .build();
+    }
+
+    private Post dtoToPost(PostDto postDto) {
+        User currentUser = authService.getCurrentUser().orElseThrow(() ->
+                new UserNotFoundException("Cannot get user from context"));
+        return new Post().builder()
+                .title(postDto.getTitle())
+                .content(postDto.getContent())
+                .createdAt(Instant.now())
+                .updateAt(Instant.now())
+                .username(currentUser.getUsername())
                 .build();
     }
 }
