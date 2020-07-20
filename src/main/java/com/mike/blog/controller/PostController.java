@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/post")
 public class PostController {
@@ -23,14 +24,12 @@ public class PostController {
     @PostMapping
     public ResponseEntity<Void> createPost(@RequestBody PostDto postDto) {
         postService.create(postDto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<PostDto>> getAll() {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(postService.getAllPosts());
+        return new ResponseEntity(postService.getAllPosts(), HttpStatus.OK);
     }
 
     @GetMapping("/byid/{id}")
