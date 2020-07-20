@@ -1,5 +1,6 @@
 package com.mike.blog.service;
 
+import com.mike.blog.dto.AuthResponse;
 import com.mike.blog.dto.LoginDto;
 import com.mike.blog.dto.RegisterDto;
 import com.mike.blog.exception.UserAlreadyExistException;
@@ -49,7 +50,7 @@ public class AuthService {
         customerRepository.save(customer);
     }
 
-    public String login(LoginDto loginDto) {
+    public AuthResponse login(LoginDto loginDto) {
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getUsername(),
@@ -57,7 +58,7 @@ public class AuthService {
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authenticate);
-        return jwtProvider.generateToken(authenticate);
+        return new AuthResponse(jwtProvider.generateToken(authenticate), loginDto.getUsername());
     }
 
     public Optional<User> getCurrentUser() {
